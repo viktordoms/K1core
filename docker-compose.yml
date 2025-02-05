@@ -1,0 +1,69 @@
+version: '3'
+
+services:
+  admin:
+    container_name: "admin"
+    build:
+      dockerfile: containers/admin/Dockerfile
+      context: ./
+    volumes:
+      - .:/api
+    ports:
+      - "8000:8000"
+    networks:
+      - app
+    depends_on:
+      - db
+    links:
+      - db
+    restart: always
+    command: gunicorn K1core.wsgi:django_app --bind 0.0.0.0:8000
+
+  api:
+    container_name: "api"
+    build:
+      dockerfile: containers/api/Dockerfile
+      context: ./
+    volumes:
+      - .:/api
+    ports:
+      - "8001:8001"
+    networks:
+      - app
+    depends_on:
+      - db
+    links:
+      - db
+    restart: always
+    command: uvicorn K1core.asgi:fastapi_app --reload --host 0.0.0.0 --port 8001
+
+  db:
+    image: mysql:8.0.29
+    container_name: "db"
+    ports:
+      - "3310:3306"
+    environment:
+      MYSQL_DATABASE: 'k1core_db'
+      MYSQL_ROOT: 'root'
+      MYSQL_ROOT_PASSWORD: 'DB_PASSWORD'
+    volumes:
+      - ./containers/mysql/data:/var/lib/mysql
+    networks:
+      - app
+
+  nginx:
+    container_name: "nginx"
+    build: containers/nginx
+    volumes:
+      - .:/api
+    ports:
+      - 1763:80
+    depends_on:
+      - admin
+      - api
+    networks:
+      - app
+
+networks:
+  app:
+    driver: bridge
