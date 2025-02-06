@@ -139,7 +139,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 TIME_LIFE_API_KEY = datetime.timedelta(minutes=30)
-LEN_API_KEY = 128
+LEN_API_KEY = 84
 
 try:
     from .local_conf import *

@@ -1,13 +1,13 @@
-from datetime import datetime, timedelta
+
 import typing as t
 
 from django.utils.timezone import now
 from django.http import JsonResponse
 from django.contrib.auth import get_user_model
-import hashlib
 
-from K1core.settings import TIME_LIFE_API_KEY, LEN_API_KEY
+from K1core.settings import TIME_LIFE_API_KEY
 from core.models import UserCredentials
+from libs.auth.funcs import generate_api_key
 
 User = get_user_model()
 
@@ -47,5 +47,4 @@ class APIKeyAuthMiddleware:
             return JsonResponse({"error": "Invalid API key"}, status=403)
 
     def hash_key(self):
-        encoded_api_key = self.credentials.api_key.encode("utf-8")
-        self.credentials.api_key = hashlib.sha256(encoded_api_key).hexdigest()[:LEN_API_KEY]
+        self.credentials.api_key = generate_api_key(self.credentials.api_key)

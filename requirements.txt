@@ -5,3 +5,5 @@ gunicorn==21.2.0
 fastapi==0.114.1
 mysqlclient==2.2.7
 uvicorn==0.34.0
+pydantic==2.10.6
+passlib==1.7.4
