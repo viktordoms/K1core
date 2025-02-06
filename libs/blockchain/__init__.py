@@ -2,16 +2,15 @@ from datetime import datetime
 
 from fastapi import HTTPException
 
-from core.models import ExternalCredentials, Provider, Currency, Block
-from libs.apis.coin_market_cap import CoinMarketCapRestClient
-from libs.apis.blockchair import BlockchairRestClient
+from core.models import Provider, Currency, Block
 
 
 class CurrencyBase:
 
     def __init__(
-        self, code=None, name=None, db=None
+        self, id=None, code=None, name=None, db=None
     ):
+        self.id = id
         self.code: str = code
         self.name: str = name
         self.db: Currency = db
@@ -27,6 +26,7 @@ class CurrencyBase:
             raise HTTPException(404, "Currency not found")
 
         return cls(
+            id=currency.id,
             code=currency.code,
             name=currency.name,
             db=currency
@@ -40,6 +40,24 @@ class CurrencyBase:
         currency.save()
 
         return currency
+
+    @classmethod
+    def get_all(cls):
+        return [
+            cls(
+                id=currency.id,
+                code=currency.code,
+                name=currency.name,
+            )
+            for currency in Currency.objects.all()
+        ]
+
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "code": self.code,
+            "name": self.name,
+        }
 
 
 class ProviderBase:
