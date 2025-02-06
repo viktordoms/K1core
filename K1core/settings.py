@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import datetime
 import os
 from pathlib import Path
+from . import celery
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -145,6 +146,20 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         'LOCATION': 'k1core-cache',
+    }
+}
+
+celery.app.conf.broker_url = 'redis://redis:6379/0'
+celery.app.conf.imports = ('libs.bin.tasks',)
+
+celery.app.conf.beat_schedule = {
+    'get_btc_stats': {
+        'task': 'libs.bin.tasks.bts_stats',
+        'schedule': datetime.timedelta(seconds=30)
+    },
+    "get_eth_stats": {
+        "task": "libs.bin.tasks.eth_stats",
+        "schedule": datetime.timedelta(seconds=30)
     }
 }
 

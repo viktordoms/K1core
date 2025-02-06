@@ -3,18 +3,22 @@ from libs.apis.rest_client import BasicExternalRestApiClient
 
 
 class CoinMarketCapRestClient(BasicExternalRestApiClient):
+    code = "COIN_MARKET_CAP"
 
-    def btc_blockchain_stats(self):
+    def get_blockchain_stats(
+        self,
+        coin: str = "BTC"
+    ):
 
         headers = {
             'Accepts': 'application/json',
-            'X-CMC_PRO_API_KEY': self.api_key,  # 'b54bcf4d-1bca-4e8e-9a24-22ff2c3d462c'
+            'X-CMC_PRO_API_KEY': self.api_key,
         }
 
         response = self._send_request(
             method='GET',
             endpoint="/v1/blockchain/statistics/latest",
-            params={"slug": "bitcoin"},
+            params={"symbol": coin},
             headers=headers,
         )
         return response

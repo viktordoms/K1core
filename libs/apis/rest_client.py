@@ -22,6 +22,7 @@ class BasicExternalRestApiClient(ABC):
     unnecessary requests to external services.
     """
     EXPIRED_CACHE_TIMEOUT = 60 * 60 * 24
+    code = None
 
     def __init__(
         self,
@@ -62,7 +63,7 @@ class BasicExternalRestApiClient(ABC):
                 self.test_mode = self.credentials.test_mode
 
                 if not self.base_url:
-                    self.base_url = self.credentials.url
+                    self.base_url = self.credentials.base_url
 
                 self.update_cache()
 
@@ -137,10 +138,9 @@ class BasicExternalRestApiClient(ABC):
         )
 
         if response.status_code not in [200, 201]:
-            data = response.json()
             raise RestApiClientException(
                 status_code=response.status_code,
-                detail="Fail",
+                detail="Failed to get details from external API.",
             )
 
         return response.json()

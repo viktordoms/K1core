@@ -45,7 +45,7 @@ services:
     environment:
       MYSQL_DATABASE: 'k1core_db'
       MYSQL_ROOT: 'root'
-      MYSQL_ROOT_PASSWORD: 'DB_PASSWORD'
+      MYSQL_ROOT_PASSWORD: 'password'
     volumes:
       - ./containers/mysql/data:/var/lib/mysql
     networks:
@@ -61,6 +61,44 @@ services:
     depends_on:
       - admin
       - api
+    networks:
+      - app
+
+  celery:
+    container_name: "celery"
+    build:
+      dockerfile: ./containers/admin/Dockerfile
+      context: ./
+    volumes:
+      - .:/api
+    command: celery -A K1core beat -l info
+
+    depends_on:
+      - admin
+      - redis
+    networks:
+      - app
+
+  worker:
+    container_name: "worker"
+    build:
+      dockerfile: ./containers/admin/Dockerfile
+      context: ./
+    volumes:
+      - .:/api
+    command: celery -A K1core worker -l info
+    depends_on:
+      - admin
+      - redis
+    links:
+      - celery
+    networks:
+      - app
+
+  redis:
+    container_name: "redis"
+    image: "redis:alpine"
+    restart: always
     networks:
       - app
 

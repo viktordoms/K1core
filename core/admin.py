@@ -10,7 +10,7 @@ admin.site.register(UserCredentials, UserCredentialsAdmin)
 
 
 class ExternalCredentialsAdmin(admin.ModelAdmin):
-    list_display = ("code", "api_key", "access_token", "test_mode", "base_url")
+    list_display = ("code", "api_key", "access_token", "test_mode", "base_url", "provider")
 
 admin.site.register(ExternalCredentials, ExternalCredentialsAdmin)
 
@@ -22,7 +22,7 @@ admin.site.register(Currency, CurrencyAdmin)
 
 
 class ProviderAdmin(admin.ModelAdmin):
-    list_display = ("code", "name", "credentials")
+    list_display = ("code", "name",)
 
 admin.site.register(Provider, ProviderAdmin)
 

@@ -1,6 +1,6 @@
-1) Before running container need set permissions to run.sh script
-
-   -`chmod +x containers/run.sh `
+1) Run & build docker
+  
+   -`docker-compose up --build`
 
 
 2) Make migrations inside container
@@ -10,6 +10,6 @@
    -`python3 manage.py migrate`
 
 
-3) Run & build docker
-  
-   -`docker-compose up --build`
+Rest Api Client (CoinMarketCap & Blockchair)
+1. Credentials saving in db (table `ExternalCredentials`) - basic (test) credentials was writing during migrations
+2. Credentials has been changed in admin-panel
