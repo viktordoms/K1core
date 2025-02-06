@@ -141,6 +141,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 TIME_LIFE_API_KEY = datetime.timedelta(minutes=30)
 LEN_API_KEY = 84
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'k1core-cache',
+    }
+}
+
 try:
     from .local_conf import *
 except ModuleNotFoundError:
