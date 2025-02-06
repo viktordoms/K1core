@@ -1,14 +1,28 @@
-from datetime import datetime
+
 import typing as t
 
-from pydantic import Field, BaseModel
+from pydantic import BaseModel, Field
+
+from libs.shemas import (
+    BasicDicSchema,
+    BasicPaginateResponseSchema,
+    BasicSearchSchema,
+    BasicPaginateRequestSchema
+)
 
 
-class CurrencySchema(BaseModel):
-    id: int
-    code: str
-    name: str
+class SearchBlocksSchema(BasicSearchSchema, BasicPaginateRequestSchema):
+    provider_id: t.Optional[int] = Field(None)
 
-class CurrencyListSchema(BaseModel):
-    result: t.List[CurrencySchema]
-    success: bool
+
+class BlockSchema(BaseModel):
+    id: t.Optional[int] = Field(None)
+    currency: BasicDicSchema
+    provider: BasicDicSchema
+    block_numbers: int
+    created_at: str
+    stored_at: str
+
+
+class ListOfBlocksSchema(BasicPaginateResponseSchema):
+    results: t.List[BlockSchema]

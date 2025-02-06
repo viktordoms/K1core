@@ -63,8 +63,9 @@ class CurrencyBase:
 class ProviderBase:
 
     def __init__(
-        self, code=None, name=None, credentials=None, db=None
+        self, id=None, code=None, name=None, credentials=None, db=None
     ):
+        self.id = id
         self.code: str = code
         self.name: str = name
         self.db: Provider  = db
@@ -83,6 +84,7 @@ class ProviderBase:
             raise HTTPException(404, "Provider not found")
 
         return cls(
+            id=provider.id,
             code=provider.code,
             name=provider.name,
             db=provider
@@ -97,12 +99,31 @@ class ProviderBase:
 
         return provider
 
+    @classmethod
+    def get_all(cls):
+        return [
+            cls(
+                id=provider.id,
+                code=provider.code,
+                name=provider.name,
+            )
+            for provider in Provider.objects.all()
+        ]
+
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "code": self.code,
+            "name": self.name,
+        }
+
 
 class BlockBase:
 
     def __init__(
-        self, currency=None, provider=None, block_numbers=None, created_at=None, stored_at=None, db=None,
+        self, id=None, currency=None, provider=None, block_numbers=None, created_at=None, stored_at=None, db=None,
     ):
+        self.id = id
         self.currency: CurrencyBase = currency
         self.provider: ProviderBase = provider
         self.block_numbers = block_numbers
@@ -124,6 +145,7 @@ class BlockBase:
             raise HTTPException(404, "Block not found")
 
         return cls(
+            id=block.id,
             provider=ProviderBase.from_db(provider=block.provider),
             currency=CurrencyBase.from_db(currency=block.currency),
             block_numbers=block.block_numbers,
@@ -143,3 +165,13 @@ class BlockBase:
         block_db.save()
 
         return block_db
+
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "currency": self.currency.to_dict(),
+            "provider": self.provider.to_dict(),
+            "block_numbers": self.block_numbers,
+            "created_at": self.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+            "stored_at": self.stored_at.strftime("%Y-%m-%d %H:%M:%S"),
+        }

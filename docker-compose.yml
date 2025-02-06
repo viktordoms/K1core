@@ -64,43 +64,43 @@ services:
     networks:
       - app
 
-  celery:
-    container_name: "celery"
-    build:
-      dockerfile: ./containers/admin/Dockerfile
-      context: ./
-    volumes:
-      - .:/api
-    command: celery -A K1core beat -l info
-
-    depends_on:
-      - admin
-      - redis
-    networks:
-      - app
-
-  worker:
-    container_name: "worker"
-    build:
-      dockerfile: ./containers/admin/Dockerfile
-      context: ./
-    volumes:
-      - .:/api
-    command: celery -A K1core worker -l info
-    depends_on:
-      - admin
-      - redis
-    links:
-      - celery
-    networks:
-      - app
-
-  redis:
-    container_name: "redis"
-    image: "redis:alpine"
-    restart: always
-    networks:
-      - app
+#  celery:
+#    container_name: "celery"
+#    build:
+#      dockerfile: ./containers/admin/Dockerfile
+#      context: ./
+#    volumes:
+#      - .:/api
+#    command: celery -A K1core beat -l info
+#
+#    depends_on:
+#      - admin
+#      - redis
+#    networks:
+#      - app
+#
+#  worker:
+#    container_name: "worker"
+#    build:
+#      dockerfile: ./containers/admin/Dockerfile
+#      context: ./
+#    volumes:
+#      - .:/api
+#    command: celery -A K1core worker -l info
+#    depends_on:
+#      - admin
+#      - redis
+#    links:
+#      - celery
+#    networks:
+#      - app
+#
+#  redis:
+#    container_name: "redis"
+#    image: "redis:alpine"
+#    restart: always
+#    networks:
+#      - app
 
 networks:
   app:

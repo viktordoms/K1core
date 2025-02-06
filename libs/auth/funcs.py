@@ -1,6 +1,6 @@
 import hashlib
 import typing as t
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import check_password, make_password
@@ -26,15 +26,20 @@ def login(
     if not user.is_active:
         raise AuthForbiddenExceptions(403, "Account is disabled")
 
-    credentials, is_new = UserCredentials.objects.get_or_create(user=user)
+    credentials = UserCredentials.objects.filter(user=user).first()
 
-    # if it's first login and not created credentials - hashed api-key by username & password
-    # else -> hashed previous api-key
-    to_hash = f"{username}:{password}" if is_new else credentials.api_key
-    credentials.api_key = generate_api_key(to_hash)
+    if not credentials:
+        # if it's first login and not created credentials - hashed api-key by username & password
+        # else -> hashed previous api-key
+        credentials = UserCredentials.objects.create(
+            user=user,
+            api_key=generate_api_key(f"{username}:{password}"),
+            expired_at=datetime.now() + TIME_LIFE_API_KEY
+        )
+    else:
+        credentials.api_key = generate_api_key(credentials.api_key)
+        credentials.expired_at = datetime.now() + TIME_LIFE_API_KEY
 
-    # update expire of api-key
-    credentials.expired_at = datetime.now() + TIME_LIFE_API_KEY
     credentials.save()
 
     return {

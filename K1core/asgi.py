@@ -19,8 +19,9 @@ django_app = get_asgi_application()
 fastapi_app = FastAPI()
 
 from core.routes import auth_router, user_router, blockchain_router
+from libs.middlewares.auth import APIKeyAuthMiddleware
+
 fastapi_app.include_router(auth_router)
 fastapi_app.include_router(user_router)
 fastapi_app.include_router(blockchain_router)
-
-fastapi_app.mount("/", django_app)
+fastapi_app.add_middleware(APIKeyAuthMiddleware)
