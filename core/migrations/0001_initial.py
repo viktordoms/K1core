@@ -127,6 +127,7 @@ class Migration(migrations.Migration):
                 ('stored_at', models.DateTimeField(auto_now_add=True)),
                 ('currency', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='blocks', to='core.currency')),
                 ('provider', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='blocks', to='core.provider')),
+                ('external_id', models.CharField(blank=True, max_length=256, null=True)),
             ],
             options={
                 'db_table': 'block',

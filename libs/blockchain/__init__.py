@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from django.db.models import Q
 from fastapi import HTTPException
 
 from core.models import Provider, Currency, Block
@@ -122,6 +123,7 @@ class BlockBase:
 
     def __init__(
         self, id=None, currency=None, provider=None, block_numbers=None, created_at=None, stored_at=None, db=None,
+        external_id=None
     ):
         self.id = id
         self.currency: CurrencyBase = currency
@@ -129,14 +131,15 @@ class BlockBase:
         self.block_numbers = block_numbers
         self.created_at: datetime = created_at
         self.stored_at: datetime = stored_at
+        self.external_id: str = external_id
         self.db: Block = db
 
     @classmethod
-    def from_db(cls, pk: int = None, block: Block = None):
-        assert pk or block, "Missing `block` or `id`"
+    def from_db(cls, pk: int = None, block: Block = None, external_id = None):
+        assert any((pk, external_id)) or block or external_id, "Missing `block` or `id`"
         if not block:
             block = Block.objects.filter(
-                pk=pk
+                Q(pk=pk) | Q(external_id=external_id)
             ).select_related(
                 "provider", "currency"
             ).first()
@@ -151,6 +154,7 @@ class BlockBase:
             block_numbers=block.block_numbers,
             created_at=block.created_at,
             stored_at=block.stored_at,
+            external_id=block.external_id,
             db=block,
         )
 
@@ -161,6 +165,7 @@ class BlockBase:
             block_numbers=self.block_numbers,
             created_at=self.created_at,
             stored_at=self.stored_at,
+            external_id=self.external_id,
         )
         block_db.save()
 
@@ -174,4 +179,5 @@ class BlockBase:
             "block_numbers": self.block_numbers,
             "created_at": self.created_at.strftime("%Y-%m-%d %H:%M:%S"),
             "stored_at": self.stored_at.strftime("%Y-%m-%d %H:%M:%S"),
+            "external_id": self.external_id,
         }

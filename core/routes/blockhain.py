@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request
 
-from libs.blockchain.schema import SearchBlocksSchema, ListOfBlocksSchema
+from libs.blockchain.schema import SearchBlocksSchema, ListOfBlocksSchema, BlockSchema, BlockSpecificSearchSchema
 from libs.shemas import BasicListOfDicSchema
 from libs.blockchain import funcs
 
@@ -24,3 +24,8 @@ def get_currencies():
 @blockchain_router.post("/block/search", response_model=ListOfBlocksSchema)
 def search_blocks(schema: SearchBlocksSchema):
     return funcs.search_blocks(**schema.model_dump())
+
+
+@blockchain_router.post("/block", response_model=BlockSchema)
+def search_blocks(schema: BlockSpecificSearchSchema):
+    return funcs.search_block(**schema.model_dump())

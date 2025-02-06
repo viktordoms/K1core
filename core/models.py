@@ -53,6 +53,7 @@ class Block(models.Model):
     block_numbers = models.IntegerField(null=False, blank=False)
     created_at = models.DateTimeField(null=False, blank=False)
     stored_at = models.DateTimeField(auto_now_add=True)
+    external_id = models.CharField(null=True, blank=True, max_length=256)
 
     class Meta:
         db_table = "block"

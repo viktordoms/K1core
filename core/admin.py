@@ -28,6 +28,6 @@ admin.site.register(Provider, ProviderAdmin)
 
 
 class BlockAdmin(admin.ModelAdmin):
-    list_display = ("currency", "provider", "block_numbers", "created_at", "stored_at")
+    list_display = ("currency", "provider", "block_numbers", "created_at", "stored_at", "external_id")
 
 admin.site.register(Block, BlockAdmin)

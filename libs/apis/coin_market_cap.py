@@ -3,7 +3,7 @@ from libs.apis.rest_client import BasicExternalRestApiClient
 
 
 class CoinMarketCapRestClient(BasicExternalRestApiClient):
-    code = "COIN_MARKET_CAP"
+    code = "COIN_MARK" # TODO WIP
 
     def get_blockchain_stats(
         self,

@@ -1,6 +1,8 @@
 import typing as t
 
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.db.models import Q
+from fastapi import HTTPException
 
 from core.models import Block
 from libs.blockchain import CurrencyBase, ProviderBase, BlockBase
@@ -56,7 +58,35 @@ def search_blocks(
         "page": page,
         "on_page": on_page,
         "total": total,
-        "results": [
-            item.to_dict() for item in blocks
-        ],
+        "results": [item.to_dict() for item in blocks],
     }
+
+def search_block(
+    id: t.Optional[int] = None,
+    currency_name: t.Optional[str] = None,
+    block_numbers: t.Optional[int] = None,
+    **kwargs,
+):
+    """ Search block by specific filters """
+
+    if not any((
+        id,
+        all((currency_name, block_numbers))
+    )):
+        raise HTTPException(400, "Parameters `id` or (`currency_name`, `block_numbers`) are required" )
+
+    block_query = Block.objects
+    if id:
+        block_query = block_query.filter(Q(id=id) | Q(external_id__contains=id))
+
+    if currency_name and block_numbers:
+        block_query = block_query.filter(
+            currency__name__contains=currency_name,
+            block_numbers=block_numbers,
+        )
+    block_db = block_query.first()
+    if not block_db:
+        raise HTTPException(404, "Not found block by provided query")
+
+    return BlockBase.from_db(block=block_db).to_dict()
+

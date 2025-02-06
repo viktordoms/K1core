@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 
 from K1core.settings import DEBUG
 from K1core.celery import app
@@ -20,15 +21,22 @@ def bts_stats():
         if bitcoin_info:
             currency = Currency.objects.filter(code=coin).first()
             provider = Provider.objects.filter(code=client.code).first()
-            block = BlockBase(
-                currency=CurrencyBase.from_db(currency=currency),
-                provider=ProviderBase.from_db(provider=provider),
-                block_numbers=bitcoin_info.get("total_blocks"),
-                created_at=bitcoin_info.get("first_block_timestamp"),
-            )
-            block_db: Block = block.insert_to_db()
+            external_id = bitcoin_info.get("id")
 
-            print(f"Add BTC block ID: {block_db.id} - count {block.block_numbers}")
+            try:
+                BlockBase.from_db(external_id=external_id)
+
+            except HTTPException as e:
+                # if not found by 'external_id' -> create new block in db
+                block = BlockBase(
+                    currency=CurrencyBase.from_db(currency=currency),
+                    provider=ProviderBase.from_db(provider=provider),
+                    block_numbers=bitcoin_info.get("total_blocks"),
+                    created_at=bitcoin_info.get("first_block_timestamp"),
+                    external_id=external_id,
+                )
+                block_db: Block = block.insert_to_db()
+                print(f"Add BTC block ID: {block_db.id} - count {block.block_numbers}")
 
     except Exception as e:
         print(f"Error during getting BTC stats: {str(e)}")
@@ -45,15 +53,24 @@ def eth_stats():
         if ethereum_info:
             currency = Currency.objects.filter(code="ETH").first()
             provider = Provider.objects.filter(code=client.code).first()
-            block = BlockBase(
-                currency=CurrencyBase.from_db(currency=currency),
-                provider=ProviderBase.from_db(provider=provider),
-                block_numbers=ethereum_info.get("blocks"),
-                created_at=ethereum_info.get("best_block_time"),
-            )
-            block_db: Block = block.insert_to_db()
+            created_at = ethereum_info.get("best_block_time")
+            block_count = ethereum_info.get("blocks")
 
-            print(f"Add ETH block ID: {block_db.id} - count {block.block_numbers}")
+            if not Block.objects.filter(
+                currency=currency,
+                block_numbers=block_count,
+                created_at=created_at,
+            ).exists():
+                # if not found by 'created_at' and 'block_count' -> create new block in db
+                block = BlockBase(
+                    currency=CurrencyBase.from_db(currency=currency),
+                    provider=ProviderBase.from_db(provider=provider),
+                    block_numbers=block_count,
+                    created_at=created_at,
+                )
+                block_db: Block = block.insert_to_db()
+
+                print(f"Add ETH block ID: {block_db.id} - count {block.block_numbers}")
 
     except Exception as e:
         print(f"Error during getting ETH stats: {str(e)}")

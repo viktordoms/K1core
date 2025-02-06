@@ -47,7 +47,6 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    'libs.middlewares.auth.APIKeyAuthMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -155,11 +154,11 @@ celery.app.conf.imports = ('libs.bin.tasks',)
 celery.app.conf.beat_schedule = {
     'get_btc_stats': {
         'task': 'libs.bin.tasks.bts_stats',
-        'schedule': datetime.timedelta(seconds=30)
+        'schedule': datetime.timedelta(minutes=1)
     },
     "get_eth_stats": {
         "task": "libs.bin.tasks.eth_stats",
-        "schedule": datetime.timedelta(seconds=30)
+        "schedule": datetime.timedelta(minutes=1)
     }
 }
 
