@@ -1,0 +1,18 @@
+
+DEBUG=True
+
+SECRET_KEY = 'django-insecure-et7kzk_=%)ictdla$u$gewaw)c(570$m8sr+gl1cpggk!g%meq'
+
+CSRF_TRUSTED_ORIGINS = ["http://0.0.0.0:1763"]
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'k1core_db',
+        'USER': 'root',
+        'PASSWORD': 'password',
+        'HOST': 'db',
+        'PORT': '3306',
+    }
+}
+
