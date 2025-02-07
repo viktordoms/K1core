@@ -19,7 +19,7 @@ Rest Api Client (CoinMarketCap & Blockchair)
 
 URLs:
 1) `/admin` - Django URLs
-2) `/api` - FastApi URLs
+2) `/api` - FastApi URLs  (`'headers': {'API-Key': '.....'}`)
 
 Users:
 
